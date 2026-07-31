@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: cloudmoon-web
+    env: node
+    region: singapore
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 10000
