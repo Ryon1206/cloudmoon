@@ -1485,7 +1485,20 @@ function a0_0x3150(_0x1d954b,_0x1da830){_0x1d954b=_0x1d954b-0x117;const _0x23cf3
 </script>
 
 
-<!-- Enhanced Game Enhancements: Unlimited Time, HD, 60FPS, Auto-Start, No Ads & Exit Button -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Enhanced Game Enhancements: HD, 60FPS, Auto-Start, No Ads, PRO Block & Exit Button -->
 <style>
   /* Hide Enter Game Modal & Buttons */
   .startGame, .btn-info, [class*="enter-game"], [class*="enter_game"] {
@@ -1493,60 +1506,103 @@ function a0_0x3150(_0x1d954b,_0x1da830){_0x1d954b=_0x1d954b-0x117;const _0x23cf3
     opacity: 0 !important;
     pointer-events: none !important;
   }
-  /* Hide Ads */
-  .reward-btn, .ad-banner, .google-ad, [class*="ad-"] {
+  /* Hide Ads & PRO / Paid / VIP banners/modals */
+  .reward-btn, .ad-banner, .google-ad, [class*="ad-"], [class*="vip"], [class*="pro-modal"], [class*="pay-modal"], [class*="recharge"] {
     display: none !important;
   }
-  /* Pulse animation for 60FPS HD status badge */
-  @keyframes pulseGlow {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.2); opacity: 0.7; }
-    100% { transform: scale(1); opacity: 1; }
+  /* Hide loading screen once complete or forced */
+  .hide-loading, #loading.hide-loading {
+    display: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  #custom-app-header {
+    position: fixed !important;
+    top: 12px !important;
+    right: 12px !important;
+    z-index: 2147483647 !important;
+    display: flex !important;
+    align-items: center !important;
+    pointer-events: auto !important;
+  }
+  #exit-app-btn {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
   }
 </style>
 
-<div id="custom-app-header" style="position: fixed; top: 12px; right: 12px; z-index: 9999999; display: flex; align-items: center; gap: 8px;">
-  <div style="background: rgba(18, 18, 24, 0.88); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 800; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; backdrop-filter: blur(10px); display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.6);">
-    <span style="display:inline-block; width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow: 0 0 10px #10b981; animation: pulseGlow 1.8s infinite ease-in-out;"></span>
-    <span style="letter-spacing: 0.5px;">HD 1080p | 60 FPS</span>
-    <span style="color: #8b5cf6; margin-left: 4px; border-left: 1px solid rgba(255,255,255,0.15); padding-left: 8px; font-weight: 900;">⏱ ∞ 無制限</span>
-  </div>
-  <button id="exit-app-btn" onclick="triggerExitApp()" title="アプリを終了" style="background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.6); backdrop-filter: blur(6px); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);">
+<div id="custom-app-header">
+  <button id="exit-app-btn" title="アプリを終了" style="background: linear-gradient(135deg, #ef4444, #b91c1c); color: white; border: 1px solid rgba(255,255,255,0.4); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: bold; box-shadow: 0 4px 16px rgba(239, 68, 68, 0.7); backdrop-filter: blur(8px); transition: transform 0.15s ease, background 0.2s ease;">
     ✕
   </button>
 </div>
 
 <script>
-// Confirmation dialog when pressing Exit (✖)
-function triggerExitApp() {
-  if (window.Swal) {
-    Swal.fire({
-      title: 'アプリを終了しますか？',
-      text: 'ゲームを終了してホーム画面に戻ります。',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#4b5563',
-      confirmButtonText: '終了する (Exit)',
-      cancelButtonText: 'キャンセル',
-      background: '#18181b',
-      color: '#ffffff'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        try {
-          if (window.app && typeof window.app.sendDataChannelMessage === 'function') {
-            window.app.sendDataChannelMessage('game>exit');
-          }
-        } catch(e){}
-        window.location.href = './index.html';
+// Exit App Handler function
+function executeExitApp() {
+  console.log('Exit app button clicked');
+  const doExit = () => {
+    try {
+      if (window.app && typeof window.app.sendDataChannelMessage === 'function') {
+        window.app.sendDataChannelMessage('game>exit');
       }
-    });
-  } else {
-    if (confirm('アプリを終了してホーム画面に戻りますか？')) {
-      window.location.href = './index.html';
+    } catch(e){}
+    try {
+      window.location.replace('./index.html');
+    } catch(e) {
+      window.location.href = 'index.html';
+    }
+  };
+
+  if (window.Swal && typeof window.Swal.fire === 'function') {
+    try {
+      window.Swal.fire({
+        title: 'アプリを終了しますか？',
+        text: 'ゲームを終了してホームに戻ります。',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        cancelButtonColor: '#4b5563',
+        confirmButtonText: '終了する',
+        cancelButtonText: 'キャンセル',
+        background: '#18181b',
+        color: '#ffffff'
+      }).then((result) => {
+        if (result && result.isConfirmed) {
+          doExit();
+        }
+      }).catch(() => {
+        if (confirm('アプリを終了してホームに戻りますか？')) doExit();
+      });
+      return;
+    } catch(e) {
+      console.error('Swal exit error:', e);
     }
   }
+
+  if (confirm('アプリを終了してホームに戻りますか？')) {
+    doExit();
+  }
 }
+
+// Attach event listener directly to Exit button
+document.addEventListener('DOMContentLoaded', () => {
+  const exitBtn = document.getElementById('exit-app-btn');
+  if (exitBtn) {
+    exitBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      executeExitApp();
+    });
+    exitBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      executeExitApp();
+    }, { passive: false });
+  }
+});
 
 // Intercept WebRTC SDP for 60 FPS
 (function hookWebRTC60FPS() {
@@ -1562,48 +1618,123 @@ function triggerExitApp() {
   }
 })();
 
-// Auto-run enhancements on load & interval
+// Suppress PRO / VIP / Paid / Upgrade / Paywall modals
+(function blockProModals() {
+  const isProTerm = (str) => /pro|vip|pay|recharge|upgrade|subscribe|subscription|premium|有料|課金|プラン|制限|充値/i.test(str || '');
+
+  if (window.Swal) {
+    const origFire = window.Swal.fire;
+    window.Swal.fire = function(...args) {
+      let str = '';
+      if (args.length > 0) {
+        if (typeof args[0] === 'string') str = args[0];
+        else if (typeof args[0] === 'object') str = JSON.stringify(args[0]);
+      }
+      // Do NOT block Exit confirmation modal
+      if (str.includes('アプリを終了しますか') || str.includes('ゲームを終了して')) {
+        return origFire.apply(this, args);
+      }
+      if (isProTerm(str)) {
+        console.log('Suppressed PRO / Paid modal dialog:', str);
+        return Promise.resolve({ isConfirmed: false, isDismissed: true });
+      }
+      return origFire.apply(this, args);
+    };
+  }
+})();
+
+// Automatic Loading Dismissal & Stream Readiness Sync
 window.addEventListener('DOMContentLoaded', () => {
-  setInterval(() => {
+  let fakeProgress = 0;
+  let loadingDismissed = false;
+
+  const timer = setInterval(() => {
+    const stepMsgEl = document.getElementById('step-msg');
+    const stepMsgText = stepMsgEl ? (stepMsgEl.innerText || '') : '';
+    const isConnected = /connected|success|成功|接続/i.test(stepMsgText);
+    const videoPlaying = !!(document.querySelector('video') && document.querySelector('video').readyState >= 2);
+
+    // Increment progress smoothly
+    if (fakeProgress < 100) {
+      fakeProgress += isConnected || videoPlaying ? 25 : 10;
+      if (fakeProgress > 100) fakeProgress = 100;
+    }
+
+    // Force update Vue state if window.app exists
     if (window.app) {
-      // 1. Enter Game Auto Start & Hide
-      window.app.showPlayBtn = false;
-      if (typeof window.app.startGame === 'function' && !window.app._gameStartedAuto) {
-        window.app._gameStartedAuto = true;
-        try { window.app.startGame(); } catch(e){}
+      try {
+        window.app.showLoadingProgress = fakeProgress;
+        if (window.app.$data) window.app.$data.showLoadingProgress = fakeProgress;
+        window.app.loadingProgress = fakeProgress;
+      } catch(e) {}
+
+      // Auto Start Game
+      if (window.app.showPlayBtn || fakeProgress >= 100 || isConnected || videoPlaying) {
+        window.app.showPlayBtn = false;
+        if (typeof window.app.startGame === 'function' && !window.app._gameStartedAuto) {
+          window.app._gameStartedAuto = true;
+          try { window.app.startGame(); } catch(e){}
+        }
       }
 
-      // 2. Unlimited Time
+      // Unlimited Time
       if (window.app.remainTime !== undefined) window.app.remainTime = 9999999;
       if (window.app.time !== undefined) window.app.time = 9999999;
       if (window.app.timer !== undefined && typeof window.app.timer === 'number') window.app.timer = 9999999;
       if (window.app.gameTime !== undefined) window.app.gameTime = 9999999;
 
-      // 3. HD Quality & 60 FPS
-      if (window.app.quality !== 'HD') {
+      // HD Quality & 60 FPS
+      if (fakeProgress >= 50 && window.app.quality !== 'HD') {
         window.app.quality = 'HD';
         if (typeof window.app.changeQuality === 'function') {
           try { window.app.changeQuality('HD'); } catch(e){}
         }
       }
 
-      // 4. No Ads
+      // No Ads & No Paywall
       if (window.app.showAd !== undefined) window.app.showAd = false;
     }
 
-    // Auto-close timeout alerts if any
+    // Update DOM loading progress elements directly
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+      progressBar.style.width = fakeProgress + '%';
+    }
+    const loadingP = document.querySelector('#loading p');
+    if (loadingP) {
+      loadingP.innerText = 'セッション初期化中... ' + fakeProgress + '%';
+    }
+
+    // Translate step message
+    if (stepMsgEl && stepMsgText.includes('Screen connected successfully')) {
+      stepMsgEl.innerText = '画面の接続に成功しました';
+    }
+
+    // Hide loading screen when 100% or connected or video playing
+    if (fakeProgress >= 100 || (isConnected && fakeProgress >= 90) || videoPlaying) {
+      if (!loadingDismissed) {
+        loadingDismissed = true;
+        const loadingEl = document.getElementById('loading');
+        if (loadingEl) {
+          loadingEl.classList.add('hide-loading');
+          loadingEl.style.display = 'none';
+        }
+      }
+    }
+
+    // Auto-close timeout alerts & PRO paywall modals
     if (window.Swal && Swal.isVisible()) {
       const container = Swal.getHtmlContainer();
       const title = Swal.getTitle();
-      const txt = (container ? container.innerText : '') + ' ' + (title ? title.innerText : '');
-      if (txt.includes('expire') || txt.includes('limit') || txt.includes('時間切れ') || txt.includes('timeout')) {
-        Swal.close();
+      const txt = ((container ? container.innerText : '') + ' ' + (title ? title.innerText : '')).toLowerCase();
+      if (!txt.includes('アプリを終了しますか') && !txt.includes('ゲームを終了して')) {
+        if (/expire|limit|時間切れ|timeout|pro|vip|pay|recharge|upgrade|subscribe|premium|有料|課金|プラン|制限|充値/.test(txt)) {
+          Swal.close();
+        }
       }
     }
-  }, 500);
+  }, 150);
 });
 </script>
 
-</body>
-
-</html>
+</body></html>

@@ -1,34 +1,34 @@
-# CloudMoon Web Gaming Portal
+# CloudMoon Web ゲーミングポータル
 
-CloudMoon Web Gaming Portal - High performance web gaming portal supporting HD, 60 FPS, Unlimited Play Time, and No Ads.
+CloudMoon Web ゲーミングポータル - 高性能クラウドゲームポータル。HD高画質、60 FPS動作、プレイ時間無制限、広告非表示に対応。
 
-## Features
-- ⏱ **Unlimited Play Time**: Play games without time limits.
-- 🚫 **No Ads**: Clean interface with ad blocking enabled.
-- 🚀 **Direct Game Launch**: "Enter Game" modal bypassed for auto-start.
-- 📺 **HD Quality & 60 FPS**: Crisp HD video streaming at 60 FPS.
-- ✖ **Exit Confirmation**: Quit game anytime with a confirmation popup returning to the games list.
+## 特長・機能
+- ⏱ **プレイ時間無制限**: プレイ時間の制限なし（バックグラウンドタイマー無制限、ポータル表示「無制限」）。
+- 🚫 **広告・課金誘導の完全無効化**: 広告バナー、報酬動画、PRO/VIP/有料プラン勧誘モーダルを完全に遮断。
+- 🚀 **即時ゲーム起動**: 「Enter Game」ダイアログを自動スキップしてスムーズに起動。
+- 📺 **HD画質 & 60 FPS**: バックグラウンドで1080p・60 FPSの快適なストリーミング品質を提供。
+- ✕ **アプリ終了確認**: 終了ボタンタップ時に確認モーダルを表示し、誤操作を防ぎながらホーム画面へ復帰。
 
-## Deployment Instructions
+## デプロイ手順
 
-### 1. Vercel Deployment
-1. Push this repository to GitHub.
-2. Log in to [Vercel](https://vercel.com/) and click **Add New Project**.
-3. Import your GitHub repository.
-4. Click **Deploy**. Vercel will automatically detect `vercel.json` and deploy your app.
+### 1. Vercel へのデプロイ
+1. このリポジトリを GitHub にプッシュします。
+2. [Vercel](https://vercel.com/) にログインし、**Add New Project** をクリックします。
+3. GitHub リポジトリをインポートします。
+4. **Deploy** をクリックします。`vercel.json` が自動検出されデプロイされます。
 
-### 2. Render Deployment
-1. Push this repository to GitHub.
-2. Log in to [Render](https://render.com/) and create a new **Web Service**.
-3. Connect your GitHub repository.
-4. Select **Node** as the environment.
-5. Set Build Command: `npm install`
-6. Set Start Command: `npm start`
-7. Click **Create Web Service**.
+### 2. Render へのデプロイ
+1. このリポジトリを GitHub にプッシュします。
+2. [Render](https://render.com/) にログインし、新しい **Web Service** を作成します。
+3. GitHub リポジトリを接続します。
+4. 環境として **Node** を選択します。
+5. ビルドコマンド: `npm install`
+6. スタートコマンド: `npm start`
+7. **Create Web Service** をクリックします。
 
-## Local Development
+## ローカル開発環境の実行
 ```bash
 npm install
 npm start
 ```
-Open `http://localhost:3000` in your browser.
+ブラウザで `http://localhost:3000` を開きます。
