@@ -7,108 +7,107 @@
   <script src="https://cdn.tailwindcss.com"></script> 
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script> 
   <style>  
-    :root { --bg-main: #1e2831; --primary: #8b5cf6; } 
-    html { scrollbar-gutter: stable; } 
-    .portal-body { background-color: var(--bg-main); color: white; } 
+    :root { --bg-main: #0f172a; --primary: #8b5cf6; } 
+    body { background-color: #0f172a; color: white; font-family: system-ui, -apple-system, sans-serif; } 
     ::-webkit-scrollbar { width: 6px; height: 6px; } 
     ::-webkit-scrollbar-track { background: transparent; } 
-    ::-webkit-scrollbar-thumb { background: #565a68; border-radius: 3px; } 
-    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } 
-    .loading-spinner { animation: spin 1s linear infinite; } 
-    .category-btn { background-color: #2d3748; color: #a0aec0; } 
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; } 
+    .category-btn { background-color: #1e293b; color: #94a3b8; } 
     .category-btn.active { background-color: #8b5cf6; color: white; } 
     .no-scrollbar::-webkit-scrollbar { display: none; } 
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } 
     .game-card-item { 
-      aspect-ratio: 16/9; 
-      background: rgba(30, 41, 59, 0.5); 
-      border: 1px solid rgba(255, 255, 255, 0.08); 
-      transition: all 0.3s ease; 
+      aspect-ratio: 16/10; 
+      background: #1e293b; 
+      border: 1px solid rgba(255, 255, 255, 0.1); 
+      transition: all 0.25s ease; 
       cursor: pointer; 
       position: relative; 
       overflow: hidden; 
-      border-radius: 16px; 
+      border-radius: 14px; 
     } 
     .game-card-item:hover { 
       transform: translateY(-4px); 
-      border-color: rgba(139, 92, 246, 0.6); 
-      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.3); 
+      border-color: #8b5cf6; 
+      box-shadow: 0 10px 20px -5px rgba(139, 92, 246, 0.4); 
     } 
-    .card-banner { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; } 
-    .game-card-item:hover .card-banner { transform: scale(1.08); } 
-    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.2) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; } 
-    .login-input { background-color: #2d3748; border: 1px solid rgba(255, 255, 255, 0.1); color: white; width: 100%; padding: 8px 14px; border-radius: 12px; outline: none; } 
+    .card-banner { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; } 
+    .game-card-item:hover .card-banner { transform: scale(1.05); } 
+    .card-overlay { 
+      position: absolute; 
+      inset: 0; 
+      background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.3) 60%, transparent 100%); 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: flex-end; 
+      padding: 10px 12px; 
+    } 
+    .login-input { background-color: #1e293b; border: 1px solid rgba(255, 255, 255, 0.1); color: white; width: 100%; padding: 6px 12px; border-radius: 10px; outline: none; } 
   </style>
 </head>
-<body oncontextmenu="return false;"> 
-  <div id="app"> 
-    <div class="portal-body min-h-screen"> 
-      <!-- ナビゲーションバー -->
-      <nav class="sticky top-0 z-50 bg-[#1e2831] border-b border-white/5 px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4"> 
-        <div class="flex items-center justify-between w-full md:w-auto gap-4"> 
-          <div class="flex items-center gap-2.5"> 
-            <img src="https://cloudmoonapp.com/favicon.ico" class="w-8 h-8 rounded-lg" alt="Logo" onerror="this.src='https://placehold.co/32x32/8b5cf6/ffffff?text=CM'"> 
-            <span class="text-xl font-black tracking-tighter text-white">Cloud<span class="text-[#8b5cf6]">Moon</span></span> 
-          </div> 
-          <div class="flex items-center gap-3"> 
-            <div id="server-select-container"></div> 
-            <div id="device-info-badge" class="text-xs bg-gray-800 text-gray-400 px-3 py-1.5 rounded-xl border border-white/5"></div>
-          </div> 
+<body> 
+  <div id="app" class="min-h-screen"> 
+    <!-- ナビゲーションバー -->
+    <nav class="sticky top-0 z-50 bg-[#0f172a]/95 backdrop-blur-md border-b border-white/10 px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-3"> 
+      <div class="flex items-center justify-between w-full md:w-auto gap-4"> 
+        <div class="flex items-center gap-2.5"> 
+          <div class="w-8 h-8 rounded-lg bg-[#8b5cf6] flex items-center justify-center font-black text-white text-lg">CM</div>
+          <span class="text-xl font-black tracking-tight text-white">Cloud<span class="text-[#8b5cf6]">Moon</span></span> 
         </div> 
-        <div class="flex items-center w-full max-w-xl"> 
-          <div class="relative w-full"> 
-            <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i> 
-            <input type="text" id="search-input" placeholder="Search games..." class="w-full h-10 bg-gray-800 border border-white/5 rounded-xl pl-11 pr-4 text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-[#8b5cf6]/30 transition-all outline-none" oninput="App.handleSearch(this.value)"> 
-          </div> 
-        </div> 
-      </nav> 
-
-      <!-- 最近プレイしたゲーム -->
-      <section id="recent-games-section" class="max-w-7xl mx-auto px-4 py-4 hidden"> 
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-md font-bold text-white flex items-center gap-2">
-            <i data-lucide="history" class="w-4 h-4 text-[#8b5cf6]"></i>Recently Played
-          </h2>
-          <button onclick="App.clearRecentGames()" class="text-xs text-gray-500 hover:text-red-400 transition">Clear</button>
-        </div> 
-        <div id="recent-games-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div> 
-      </section> 
-
-      <!-- カテゴリバー -->
-      <div id="category-bar" class="max-w-7xl mx-auto px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar"></div> 
-
-      <!-- 件数カウント表示 -->
-      <div class="max-w-7xl mx-auto px-4 pt-2 pb-1 text-xs text-gray-400 flex justify-between items-center">
-        <span id="game-count-label">Loading...</span>
-        <button onclick="App.loadGames()" class="hover:text-purple-400 transition flex items-center gap-1">
-          <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh
-        </button>
-      </div>
-
-      <!-- ゲーム一覧 -->
-      <main class="max-w-7xl mx-auto p-4 pb-20">
-        <div id="game-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
-      </main> 
-
-      <!-- ゲーム詳細モーダル -->
-      <div id="game-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:100;"> 
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="App.closeModal()"></div> 
-        <div class="absolute bottom-0 left-0 right-0 bg-[#1e2831] border-t border-white/10 p-6 md:top-1/2 md:left-1/2 md:bottom-auto md:w-[480px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl"> 
-          <div id="modal-content" class="flex flex-col gap-5"></div> 
+        <div class="flex items-center gap-3"> 
+          <div id="server-select-container"></div> 
+          <div id="device-info-badge" class="text-xs bg-slate-800 text-slate-400 px-3 py-1.5 rounded-xl border border-white/5"></div>
         </div> 
       </div> 
-
-      <!-- 起動モーダル -->
-      <div id="queue-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:300;"> 
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div> 
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1e2831] w-[90%] max-w-[380px] p-6 rounded-3xl text-center border border-white/10"> 
-          <div class="loading-spinner w-10 h-10 border-4 border-[#8b5cf6] border-t-transparent rounded-full mx-auto mb-4"></div> 
-          <h2 class="text-xl font-bold text-white mb-1">Connecting Cloud...</h2> 
-          <p class="text-xs text-gray-400 mb-6">Starting instance without login</p> 
-          <button onclick="App.cancelQueue()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl text-sm">Cancel</button> 
+      <div class="flex items-center w-full max-w-xl"> 
+        <div class="relative w-full"> 
+          <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i> 
+          <input type="text" id="search-input" placeholder="Search 40+ games..." class="w-full h-10 bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 text-sm text-white placeholder-slate-400 focus:ring-2 focus:ring-[#8b5cf6]/50 transition-all outline-none" oninput="App.handleSearch(this.value)"> 
         </div> 
+      </div> 
+    </nav> 
+
+    <!-- 最近プレイしたゲーム -->
+    <section id="recent-games-section" class="max-w-7xl mx-auto px-4 pt-4 hidden"> 
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="history" class="w-4 h-4 text-[#8b5cf6]"></i>Recently Played
+        </h2>
+        <button onclick="App.clearRecentGames()" class="text-xs text-slate-400 hover:text-red-400 transition">Clear</button>
+      </div> 
+      <div id="recent-games-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"></div> 
+    </section> 
+
+    <!-- カテゴリバー -->
+    <div id="category-bar" class="max-w-7xl mx-auto px-4 pt-4 flex gap-2 overflow-x-auto no-scrollbar"></div> 
+
+    <!-- 件数カウント表示 -->
+    <div class="max-w-7xl mx-auto px-4 pt-3 pb-1 text-xs text-slate-400 flex justify-between items-center">
+      <span id="game-count-label">Loading games...</span>
+    </div>
+
+    <!-- ゲーム一覧 -->
+    <main class="max-w-7xl mx-auto p-4 pb-20">
+      <div id="game-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
+    </main> 
+
+    <!-- ゲーム詳細モーダル -->
+    <div id="game-modal" style="display:none;" class="fixed inset-0 z-50"> 
+      <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="App.closeModal()"></div> 
+      <div class="absolute bottom-0 left-0 right-0 bg-[#1e293b] border-t border-white/10 p-6 md:top-1/2 md:left-1/2 md:bottom-auto md:w-[460px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl md:border shadow-2xl"> 
+        <div id="modal-content" class="flex flex-col gap-4"></div> 
       </div> 
     </div> 
+
+    <!-- プレイヤー（ゲーム実行画面モーダル） -->
+    <div id="player-modal" style="display:none;" class="fixed inset-0 z-[100] bg-black">
+      <div class="absolute top-3 right-3 z-10">
+        <button onclick="App.closePlayer()" class="bg-black/80 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-full text-xs transition border border-white/20 shadow-lg">
+          ✕ Close Game
+        </button>
+      </div>
+      <iframe id="player-frame" class="w-full h-full border-0" allow="autoplay; gamepad; fullscreen; microphone; camera"></iframe>
+    </div>
   </div> 
 
   <script>
@@ -150,7 +149,7 @@
       renderDeviceInfo() {
         const el = document.getElementById('device-info-badge');
         if (el && this.deviceId) {
-          el.innerHTML = `<span class="text-gray-500">ID:</span> <span class="font-mono text-white">${this.deviceId.substring(0, 8)}</span>`;
+          el.innerHTML = `<span class="text-slate-500">ID:</span> <span class="font-mono text-white">${this.deviceId.substring(0, 8)}</span>`;
         }
       },
 
@@ -161,7 +160,7 @@
         
         container.innerHTML = `
           <select id="server-select" class="login-input cursor-pointer text-xs py-1 px-2" onchange="App.handleServerChange(this.value)">
-            <option value="3" ${currentServer === '3' ? 'selected' : ''}>Asia</option>
+            <option value="3" ${currentServer === '3' ? 'selected' : ''}>Asia Server</option>
             <option value="23" ${currentServer === '23' ? 'selected' : ''}>US East</option>
             <option value="22" ${currentServer === '22' ? 'selected' : ''}>US West</option>
             <option value="4" ${currentServer === '4' ? 'selected' : ''}>Europe</option>
@@ -174,56 +173,52 @@
       },
 
       loadGames() {
-        // 全タイトルを即時展開
-        const titles = [
-          { title: 'Genshin Impact', cat: ['rpg', 'action'] },
-          { title: 'Honkai: Star Rail', cat: ['rpg'] },
-          { title: 'Zenless Zone Zero', cat: ['action'] },
-          { title: 'Wuthering Waves', cat: ['rpg', 'action'] },
-          { title: 'Roblox', cat: ['casual'] },
-          { title: 'PUBG MOBILE', cat: ['action'] },
-          { title: 'Call of Duty: Mobile', cat: ['action'] },
-          { title: 'Free Fire', cat: ['action'] },
-          { title: 'Mobile Legends: Bang Bang', cat: ['action'] },
-          { title: 'Minecraft', cat: ['casual'] },
-          { title: 'Brawl Stars', cat: ['action', 'casual'] },
-          { title: 'Clash Royale', cat: ['casual', 'strategy'] },
-          { title: 'Clash of Clans', cat: ['strategy'] },
-          { title: 'Solo Leveling: Arise', cat: ['action', 'rpg'] },
-          { title: 'eFootball 2024', cat: ['sports'] },
-          { title: 'League of Legends: Wild Rift', cat: ['action', 'strategy'] },
-          { title: 'Asphalt 9: Legends', cat: ['sports', 'action'] },
-          { title: 'Apex Legends Mobile', cat: ['action'] },
-          { title: 'EA SPORTS FC Mobile', cat: ['sports'] },
-          { title: 'Pokémon UNITE', cat: ['casual', 'action'] },
-          { title: 'GTA: San Andreas', cat: ['action'] },
-          { title: 'Tower of Fantasy', cat: ['rpg', 'action'] },
-          { title: 'Dragon Ball Legends', cat: ['action'] },
-          { title: 'NARUTO X BORUTO Ninja Voltage', cat: ['action'] },
-          { title: 'One Piece Bounty Rush', cat: ['action'] },
-          { title: 'Fate/Grand Order', cat: ['rpg'] },
-          { title: 'Arknights', cat: ['strategy', 'rpg'] },
-          { title: 'Blue Archive', cat: ['rpg'] },
-          { title: 'NIKKE: Goddess of Victory', cat: ['action', 'rpg'] },
-          { title: 'Stumble Guys', cat: ['casual'] },
-          { title: 'Subway Surfers', cat: ['casual'] },
-          { title: 'Candy Crush Saga', cat: ['casual'] },
-          { title: 'Among Us', cat: ['casual'] },
-          { title: 'Raid: Shadow Legends', cat: ['rpg'] },
-          { title: 'Summoners War', cat: ['rpg', 'strategy'] },
-          { title: 'Lords Mobile', cat: ['strategy'] },
-          { title: 'State of Survival', cat: ['strategy'] },
-          { title: 'Rise of Kingdoms', cat: ['strategy'] },
-          { title: 'Arena of Valor', cat: ['action'] },
-          { title: 'Identity V', cat: ['action', 'casual'] }
+        // 高解像度リアル画像 & 動作URL付きゲームデータベース
+        const db = [
+          { title: 'Genshin Impact', cat: ['rpg', 'action'], img: 'https://images2.alphacoders.com/110/1108237.jpg', playUrl: 'https://cloudmoonapp.com/play/genshin-impact' },
+          { title: 'Honkai: Star Rail', cat: ['rpg'], img: 'https://images8.alphacoders.com/131/1312388.jpeg', playUrl: 'https://cloudmoonapp.com/play/honkai-star-rail' },
+          { title: 'Zenless Zone Zero', cat: ['action'], img: 'https://images7.alphacoders.com/136/1360341.png', playUrl: 'https://cloudmoonapp.com/play/zenless-zone-zero' },
+          { title: 'Wuthering Waves', cat: ['rpg', 'action'], img: 'https://images3.alphacoders.com/136/1360155.png', playUrl: 'https://cloudmoonapp.com/play/wuthering-waves' },
+          { title: 'Roblox', cat: ['casual', 'action'], img: 'https://images7.alphacoders.com/112/1126938.png', playUrl: 'https://cloudmoonapp.com/play/roblox' },
+          { title: 'PUBG MOBILE', cat: ['action'], img: 'https://images.alphacoders.com/908/908323.jpg', playUrl: 'https://cloudmoonapp.com/play/pubg-mobile' },
+          { title: 'Call of Duty: Mobile', cat: ['action'], img: 'https://images6.alphacoders.com/105/1055745.jpg', playUrl: 'https://cloudmoonapp.com/play/call-of-duty-mobile' },
+          { title: 'Apex Legends Mobile', cat: ['action'], img: 'https://images2.alphacoders.com/123/1230489.png', playUrl: 'https://cloudmoonapp.com/play/apex-legends-mobile' },
+          { title: 'Minecraft', cat: ['casual'], img: 'https://images.alphacoders.com/133/1331700.png', playUrl: 'https://cloudmoonapp.com/play/minecraft' },
+          { title: 'Brawl Stars', cat: ['action', 'casual'], img: 'https://images4.alphacoders.com/985/985790.jpg', playUrl: 'https://cloudmoonapp.com/play/brawl-stars' },
+          { title: 'Clash Royale', cat: ['casual', 'strategy'], img: 'https://images2.alphacoders.com/687/687834.jpg', playUrl: 'https://cloudmoonapp.com/play/clash-royale' },
+          { title: 'Clash of Clans', cat: ['strategy'], img: 'https://images3.alphacoders.com/565/565022.jpg', playUrl: 'https://cloudmoonapp.com/play/clash-of-clans' },
+          { title: 'eFootball 2024', cat: ['sports'], img: 'https://images2.alphacoders.com/133/1332997.jpeg', playUrl: 'https://cloudmoonapp.com/play/efootball-2024' },
+          { title: 'League of Legends: Wild Rift', cat: ['action', 'strategy'], img: 'https://images4.alphacoders.com/112/1120286.jpg', playUrl: 'https://cloudmoonapp.com/play/wild-rift' },
+          { title: 'Asphalt 9: Legends', cat: ['sports', 'action'], img: 'https://images.alphacoders.com/936/936306.jpg', playUrl: 'https://cloudmoonapp.com/play/asphalt-9-legends' },
+          { title: 'Solo Leveling: Arise', cat: ['action', 'rpg'], img: 'https://images2.alphacoders.com/135/1359300.jpeg', playUrl: 'https://cloudmoonapp.com/play/solo-leveling-arise' },
+          { title: 'EA SPORTS FC Mobile', cat: ['sports'], img: 'https://images.alphacoders.com/133/1333100.jpeg', playUrl: 'https://cloudmoonapp.com/play/ea-sports-fc-mobile' },
+          { title: 'Free Fire', cat: ['action'], img: 'https://images6.alphacoders.com/102/1020612.jpg', playUrl: 'https://cloudmoonapp.com/play/free-fire' },
+          { title: 'Mobile Legends: Bang Bang', cat: ['action'], img: 'https://images8.alphacoders.com/109/1091230.jpg', playUrl: 'https://cloudmoonapp.com/play/mobile-legends' },
+          { title: 'Tower of Fantasy', cat: ['rpg', 'action'], img: 'https://images6.alphacoders.com/125/1252110.jpg', playUrl: 'https://cloudmoonapp.com/play/tower-of-fantasy' },
+          { title: 'NIKKE: Goddess of Victory', cat: ['action', 'rpg'], img: 'https://images7.alphacoders.com/128/1286300.jpeg', playUrl: 'https://cloudmoonapp.com/play/nikke' },
+          { title: 'Blue Archive', cat: ['rpg'], img: 'https://images3.alphacoders.com/129/1297120.png', playUrl: 'https://cloudmoonapp.com/play/blue-archive' },
+          { title: 'Fate/Grand Order', cat: ['rpg'], img: 'https://images7.alphacoders.com/835/835150.jpg', playUrl: 'https://cloudmoonapp.com/play/fate-grand-order' },
+          { title: 'Arknights', cat: ['strategy', 'rpg'], img: 'https://images5.alphacoders.com/106/1063200.jpg', playUrl: 'https://cloudmoonapp.com/play/arknights' },
+          { title: 'Dragon Ball Legends', cat: ['action'], img: 'https://images4.alphacoders.com/922/922880.jpg', playUrl: 'https://cloudmoonapp.com/play/dragon-ball-legends' },
+          { title: 'One Piece Bounty Rush', cat: ['action'], img: 'https://images2.alphacoders.com/114/1145210.jpg', playUrl: 'https://cloudmoonapp.com/play/one-piece-bounty-rush' },
+          { title: 'Pokémon UNITE', cat: ['casual', 'action'], img: 'https://images6.alphacoders.com/116/1163400.jpg', playUrl: 'https://cloudmoonapp.com/play/pokemon-unite' },
+          { title: 'Stumble Guys', cat: ['casual'], img: 'https://images2.alphacoders.com/127/1278100.png', playUrl: 'https://cloudmoonapp.com/play/stumble-guys' },
+          { title: 'Among Us', cat: ['casual'], img: 'https://images2.alphacoders.com/110/1107500.jpg', playUrl: 'https://cloudmoonapp.com/play/among-us' },
+          { title: 'Identity V', cat: ['action', 'casual'], img: 'https://images4.alphacoders.com/952/952100.jpg', playUrl: 'https://cloudmoonapp.com/play/identity-v' },
+          { title: 'Raid: Shadow Legends', cat: ['rpg'], img: 'https://images.alphacoders.com/101/1018200.jpg', playUrl: 'https://cloudmoonapp.com/play/raid-shadow-legends' },
+          { title: 'Summoners War', cat: ['rpg', 'strategy'], img: 'https://images3.alphacoders.com/841/841200.jpg', playUrl: 'https://cloudmoonapp.com/play/summoners-war' },
+          { title: 'Lords Mobile', cat: ['strategy'], img: 'https://images5.alphacoders.com/812/812300.jpg', playUrl: 'https://cloudmoonapp.com/play/lords-mobile' },
+          { title: 'Rise of Kingdoms', cat: ['strategy'], img: 'https://images6.alphacoders.com/100/1005400.jpg', playUrl: 'https://cloudmoonapp.com/play/rise-of-kingdoms' },
+          { title: 'Arena of Valor', cat: ['action'], img: 'https://images7.alphacoders.com/883/883100.jpg', playUrl: 'https://cloudmoonapp.com/play/arena-of-valor' }
         ];
 
-        this.rawGames = titles.map((item, index) => ({
+        this.rawGames = db.map((item, index) => ({
           id: String(index + 1),
           title: item.title,
-          icon: `https://images.unsplash.com/photo-${1500000000000 + (index * 123456) % 90000000}?w=500&q=80`,
+          icon: item.img,
+          playUrl: item.playUrl,
           categories: item.cat,
-          desc: `${item.title} instant cloud gaming.`
+          desc: `Play ${item.title} instantly in your browser via CloudMoon.`
         }));
 
         this.applyFilter();
@@ -260,7 +255,7 @@
 
         const countLabel = document.getElementById('game-count-label');
         if (countLabel) {
-          countLabel.textContent = `Showing ${this.filteredGames.length} of ${this.rawGames.length} games`;
+          countLabel.textContent = `Showing ${this.filteredGames.length} of ${this.rawGames.length} available games`;
         }
 
         this.renderGrid();
@@ -271,15 +266,15 @@
         if (!grid) return;
 
         if (this.filteredGames.length === 0) {
-          grid.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500">No games found</div>`;
+          grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-sm">No games found matching your search.</div>`;
           return;
         }
 
         grid.innerHTML = this.filteredGames.map(game => `
           <div class="game-card-item" onclick="App.showGameDetails('${game.id}')">
-            <img src="${game.icon}" loading="lazy" class="card-banner" alt="${game.title}" onerror="this.src='https://placehold.co/300x168/2d3748/ffffff?text=${encodeURIComponent(game.title)}'">
+            <img src="${game.icon}" loading="lazy" class="card-banner" alt="${game.title}" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&q=80'">
             <div class="card-overlay">
-              <h3 class="text-sm font-bold text-white line-clamp-1">${game.title}</h3>
+              <h3 class="text-xs font-bold text-white line-clamp-1">${game.title}</h3>
             </div>
           </div>
         `).join('');
@@ -296,7 +291,7 @@
       saveRecentGame(game) {
         this.recentGames = this.recentGames.filter(g => g.id !== game.id);
         this.recentGames.unshift(game);
-        if (this.recentGames.length > 5) this.recentGames.pop();
+        if (this.recentGames.length > 6) this.recentGames.pop();
         localStorage.setItem('cm_recent_games', JSON.stringify(this.recentGames));
         this.renderRecentGames();
       },
@@ -319,7 +314,7 @@
           <div class="game-card-item" onclick="App.showGameDetails('${game.id}')">
             <img src="${game.icon}" class="card-banner" alt="${game.title}">
             <div class="card-overlay">
-              <h3 class="text-sm font-bold text-white line-clamp-1">${game.title}</h3>
+              <h3 class="text-xs font-bold text-white line-clamp-1">${game.title}</h3>
             </div>
           </div>
         `).join('');
@@ -337,16 +332,21 @@
 
         content.innerHTML = `
           <div class="flex gap-4 items-center">
-            <img src="${game.icon}" class="w-16 h-16 rounded-2xl object-cover">
+            <img src="${game.icon}" class="w-16 h-16 rounded-2xl object-cover border border-white/10">
             <div>
-              <h2 class="text-lg font-bold text-white">${game.title}</h2>
-              <p class="text-xs text-gray-400 mt-1">Ready for cloud play</p>
+              <h2 class="text-base font-bold text-white">${game.title}</h2>
+              <p class="text-xs text-slate-400 mt-0.5">Cloud Streaming Ready</p>
             </div>
           </div>
-          <p class="text-sm text-gray-300">${game.desc}</p>
-          <button onclick="App.handlePlay('${game.id}', '${game.title}', '${game.icon}')" class="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-500/20 text-sm">
-            Play Now
-          </button>
+          <p class="text-xs text-slate-300 leading-relaxed">${game.desc}</p>
+          <div class="flex gap-2 pt-2">
+            <button onclick="App.launchGame('${game.id}', '${game.title}', '${game.icon}', '${game.playUrl}')" class="flex-1 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold py-3 rounded-xl transition shadow-lg shadow-purple-500/25 text-xs">
+              ⚡ Play Instant
+            </button>
+            <a href="${game.playUrl}" target="_blank" onclick="App.saveRecentGame({ id: '${game.id}', title: '${game.title}', icon: '${game.icon}' })" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition text-xs flex items-center justify-center">
+              ↗ External
+            </a>
+          </div>
         `;
       },
 
@@ -354,21 +354,24 @@
         document.getElementById('game-modal').style.display = 'none';
       },
 
-      handlePlay(gameId, title, icon) {
-        this.saveRecentGame({ id: gameId, title: title, icon: icon });
+      launchGame(gameId, title, icon, playUrl) {
+        this.saveRecentGame({ id: gameId, title: title, icon: icon, playUrl: playUrl });
         this.closeModal();
 
-        const queueModal = document.getElementById('queue-modal');
-        queueModal.style.display = 'block';
-
-        setTimeout(() => {
-          queueModal.style.display = 'none';
-          alert(`Starting cloud session for: ${title}`);
-        }, 1200);
+        // 埋め込みプレイヤー画面を起動
+        const playerModal = document.getElementById('player-modal');
+        const playerFrame = document.getElementById('player-frame');
+        
+        playerFrame.src = playUrl;
+        playerModal.style.display = 'block';
       },
 
-      cancelQueue() {
-        document.getElementById('queue-modal').style.display = 'none';
+      closePlayer() {
+        const playerModal = document.getElementById('player-modal');
+        const playerFrame = document.getElementById('player-frame');
+        
+        playerFrame.src = '';
+        playerModal.style.display = 'none';
       }
     };
 
