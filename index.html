@@ -3,7 +3,7 @@
 <head> 
   <meta charset="UTF-8"> 
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
-  <title>CloudMoon All-in-One</title>  
+  <title>CloudMoon Portal</title>  
   <script src="https://cdn.tailwindcss.com"></script> 
   <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script> 
   <style>  
@@ -58,7 +58,7 @@
         <div class="flex items-center w-full max-w-xl"> 
           <div class="relative w-full"> 
             <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i> 
-            <input type="text" id="search-input" placeholder="Search all games..." class="w-full h-10 bg-gray-800 border border-white/5 rounded-xl pl-11 pr-4 text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-[#8b5cf6]/30 transition-all outline-none" oninput="App.handleSearch(this.value)"> 
+            <input type="text" id="search-input" placeholder="Search games..." class="w-full h-10 bg-gray-800 border border-white/5 rounded-xl pl-11 pr-4 text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-[#8b5cf6]/30 transition-all outline-none" oninput="App.handleSearch(this.value)"> 
           </div> 
         </div> 
       </nav> 
@@ -79,9 +79,9 @@
 
       <!-- 件数カウント表示 -->
       <div class="max-w-7xl mx-auto px-4 pt-2 pb-1 text-xs text-gray-400 flex justify-between items-center">
-        <span id="game-count-label">Loading games...</span>
-        <button onclick="App.loadGames(true)" class="hover:text-purple-400 transition flex items-center gap-1">
-          <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh List
+        <span id="game-count-label">Loading...</span>
+        <button onclick="App.loadGames()" class="hover:text-purple-400 transition flex items-center gap-1">
+          <i data-lucide="refresh-cw" class="w-3 h-3"></i> Refresh
         </button>
       </div>
 
@@ -98,13 +98,13 @@
         </div> 
       </div> 
 
-      <!-- キュー待ちモーダル -->
+      <!-- 起動モーダル -->
       <div id="queue-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:300;"> 
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div> 
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1e2831] w-[90%] max-w-[380px] p-6 rounded-3xl text-center border border-white/10"> 
           <div class="loading-spinner w-10 h-10 border-4 border-[#8b5cf6] border-t-transparent rounded-full mx-auto mb-4"></div> 
           <h2 class="text-xl font-bold text-white mb-1">Connecting Cloud...</h2> 
-          <p class="text-xs text-gray-400 mb-6">Starting cloud instance</p> 
+          <p class="text-xs text-gray-400 mb-6">Starting instance without login</p> 
           <button onclick="App.cancelQueue()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl text-sm">Cancel</button> 
         </div> 
       </div> 
@@ -112,12 +112,6 @@
   </div> 
 
   <script>
-    const API_ENDPOINTS = [
-      'https://api.cloudmoonapp.com/api/v1/game/list',
-      'https://api.cloudmoonapp.com/api/game/all',
-      'https://cloudmoonapp.com/api/v1/games'
-    ];
-
     window.App = {
       rawGames: [],
       filteredGames: [],
@@ -134,20 +128,20 @@
       deviceId: null,
       recentGames: [],
 
-      async init() {
+      init() {
         this.deviceId = this.getDeviceId();
         this.renderDeviceInfo();
         this.renderServerSelect();
         this.loadRecentGames();
 
         this.renderCategories();
-        await this.loadGames();
+        this.loadGames();
       },
 
       getDeviceId() {
         let id = localStorage.getItem('cm_device_id');
         if (!id) {
-          id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'dev_' + Math.random().toString(36).substring(2, 10);
+          id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'guest_' + Math.random().toString(36).substring(2, 10);
           localStorage.setItem('cm_device_id', id);
         }
         return id;
@@ -156,7 +150,7 @@
       renderDeviceInfo() {
         const el = document.getElementById('device-info-badge');
         if (el && this.deviceId) {
-          el.innerHTML = `<span class="text-gray-500">Device:</span> <span class="font-mono text-white">${this.deviceId.substring(0, 8)}</span>`;
+          el.innerHTML = `<span class="text-gray-500">ID:</span> <span class="font-mono text-white">${this.deviceId.substring(0, 8)}</span>`;
         }
       },
 
@@ -179,55 +173,8 @@
         localStorage.setItem('cm_server_id', val);
       },
 
-      // 全件データ取得用マルチプロキシフェッチ
-      async fetchAllGamesFromAPI() {
-        for (const endpoint of API_ENDPOINTS) {
-          const proxyList = [
-            `https://corsproxy.io/?${encodeURIComponent(endpoint)}`,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(endpoint)}`
-          ];
-
-          for (const proxy of proxyList) {
-            try {
-              const res = await fetch(proxy, { headers: { 'x-device-id': this.deviceId } });
-              if (!res.ok) continue;
-              const json = await res.json();
-              const list = json.data?.list || json.data || json.list || json;
-              
-              if (Array.isArray(list) && list.length > 0) {
-                return list.map((item, index) => ({
-                  id: String(item.id || item.game_id || index + 1),
-                  title: item.title || item.name || item.game_name || 'Cloud Game',
-                  icon: item.icon || item.cover || item.image || item.banner || 'https://placehold.co/300x168/2d3748/ffffff?text=Game',
-                  categories: Array.isArray(item.categories) ? item.categories : [item.category || 'all'],
-                  desc: item.desc || item.description || 'Full cloud gaming experience.'
-                }));
-              }
-            } catch (e) {
-              continue;
-            }
-          }
-        }
-        return null;
-      },
-
-      async loadGames(forceRefresh = false) {
-        const countLabel = document.getElementById('game-count-label');
-        if (countLabel) countLabel.textContent = 'Fetching all games from CloudMoon server...';
-
-        let games = await this.fetchAllGamesFromAPI();
-
-        if (games && games.length > 0) {
-          this.rawGames = games;
-        } else {
-          // ネットワーク制限時のバックアップ全件網羅リスト
-          this.rawGames = this.generateExpandedGames();
-        }
-
-        this.applyFilter();
-      },
-
-      generateExpandedGames() {
+      loadGames() {
+        // 全タイトルを即時展開
         const titles = [
           { title: 'Genshin Impact', cat: ['rpg', 'action'] },
           { title: 'Honkai: Star Rail', cat: ['rpg'] },
@@ -271,13 +218,15 @@
           { title: 'Identity V', cat: ['action', 'casual'] }
         ];
 
-        return titles.map((item, index) => ({
+        this.rawGames = titles.map((item, index) => ({
           id: String(index + 1),
           title: item.title,
           icon: `https://images.unsplash.com/photo-${1500000000000 + (index * 123456) % 90000000}?w=500&q=80`,
           categories: item.cat,
-          desc: `${item.title} full cloud experience without downloads.`
+          desc: `${item.title} instant cloud gaming.`
         }));
+
+        this.applyFilter();
       },
 
       renderCategories() {
