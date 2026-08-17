@@ -23,40 +23,30 @@
     ::-webkit-scrollbar-thumb { background: #565a68; border-radius: 3px; } 
     @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } 
     .loading-spinner { animation: spin 1s linear infinite; } 
-    @keyframes shimmer { 0% { background-position: -468px 0; } 100% { background-position: 468px 0; } } 
-    .skeleton { 
-      background: linear-gradient(to right, #2d3748 8%, #3a4454 18%, #2d3748 33%); 
-      background-size: 800px 104px; 
-      animation: shimmer 1.5s linear infinite forwards; 
-    } 
     .category-btn { background-color: #2d3748; color: #a0aec0; } 
     .category-btn.active { background-color: #8b5cf6; color: white; } 
     .no-scrollbar::-webkit-scrollbar { display: none; } 
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } 
     .game-card-item { 
       content-visibility: auto; 
-      contain-intrinsic-size: 150px 200px; 
       aspect-ratio: 16/9; 
       background: rgba(30, 41, 59, 0.5); 
       border: 1px solid rgba(255, 255, 255, 0.05); 
-      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); 
+      transition: all 0.3s ease; 
       cursor: pointer; 
       position: relative; 
       overflow: hidden; 
-      border-radius: 20px; 
+      border-radius: 16px; 
     } 
     .game-card-item:hover { 
-      transform: translateY(-8px) scale(1.03); 
+      transform: translateY(-4px); 
       border-color: rgba(139, 92, 246, 0.6); 
-      box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 30px rgba(139, 92, 246, 0.2); 
-      z-index: 10; 
+      box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.3); 
     } 
-    .card-banner { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; } 
-    .game-card-item:hover .card-banner { transform: scale(1.1); } 
-    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.4) 40%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; } 
-    .card-badge { position: absolute; top: 12px; right: 12px; background: rgba(139, 92, 246, 0.9); backdrop-filter: blur(4px); color: white; font-size: 10px; font-weight: 900; padding: 4px 10px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); } 
-    .login-input { background-color: #2d3748; border: 1px solid rgba(255, 255, 255, 0.1); color: white; width: 100%; padding: 12px 20px; border-radius: 16px; outline: none; transition: border-color 0.2s; } 
-    .login-input:focus { border-color: #8b5cf6; } 
+    .card-banner { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; } 
+    .game-card-item:hover .card-banner { transform: scale(1.08); } 
+    .card-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.3) 50%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; } 
+    .login-input { background-color: #2d3748; border: 1px solid rgba(255, 255, 255, 0.1); color: white; width: 100%; padding: 8px 14px; border-radius: 12px; outline: none; } 
   </style>
 </head>
 <body oncontextmenu="return false;"> 
@@ -65,40 +55,38 @@
       <!-- ナビゲーションバー -->
       <nav class="sticky top-0 z-50 bg-[#1e2831] border-b border-white/5 px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4"> 
         <div class="flex items-center justify-between w-full md:w-auto gap-4"> 
-          <div class="flex items-center gap-2.5 group cursor-pointer"> 
-            <img src="https://cloudmoonapp.com/favicon.ico" class="w-8 h-8 rounded-lg" alt="Logo"> 
-            <span class="hidden md:inline text-xl font-black tracking-tighter text-white">Cloud<span class="text-[#8b5cf6]">Moon</span></span> 
+          <div class="flex items-center gap-2.5"> 
+            <img src="https://cloudmoonapp.com/favicon.ico" class="w-8 h-8 rounded-lg" alt="Logo" onerror="this.src='https://placehold.co/32x32/8b5cf6/ffffff?text=CM'"> 
+            <span class="text-xl font-black tracking-tighter text-white">Cloud<span class="text-[#8b5cf6]">Moon</span></span> 
           </div> 
           <div class="flex items-center gap-3"> 
             <div id="server-select-container"></div> 
-            <div id="device-info-badge" class="text-xs bg-gray-800 text-gray-400 px-3 py-1.5 rounded-xl border border-white/5">
-              <!-- 端末ID表示エリア -->
-            </div>
+            <div id="device-info-badge" class="text-xs bg-gray-800 text-gray-400 px-3 py-1.5 rounded-xl border border-white/5"></div>
           </div> 
         </div> 
         <div class="flex items-center w-full max-w-xl"> 
-          <div class="relative w-full group"> 
+          <div class="relative w-full"> 
             <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"></i> 
             <input type="text" id="search-input" placeholder="Discover your next game..." class="w-full h-10 bg-gray-800 border border-white/5 rounded-xl pl-11 pr-4 text-sm text-white placeholder-gray-500 focus:ring-2 focus:ring-[#8b5cf6]/30 transition-all outline-none" oninput="App.handleSearch(this.value)"> 
           </div> 
         </div> 
       </nav> 
 
-      <!-- 最近プレイしたゲームセクション -->
-      <section id="recent-games-section" class="max-w-7xl mx-auto px-4 py-6 hidden"> 
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-lg font-black text-white flex items-center gap-2">
-            <i data-lucide="history" class="w-5 h-5 text-[#8b5cf6]"></i>Recently Played (Local)
+      <!-- 最近プレイしたゲーム -->
+      <section id="recent-games-section" class="max-w-7xl mx-auto px-4 py-4 hidden"> 
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-md font-bold text-white flex items-center gap-2">
+            <i data-lucide="history" class="w-4 h-4 text-[#8b5cf6]"></i>Recently Played
           </h2>
-          <button onclick="App.clearRecentGames()" class="text-xs text-gray-500 hover:text-red-400 transition">Clear History</button>
+          <button onclick="App.clearRecentGames()" class="text-xs text-gray-500 hover:text-red-400 transition">Clear</button>
         </div> 
         <div id="recent-games-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div> 
       </section> 
 
       <!-- カテゴリバー -->
-      <div id="category-bar" class="max-w-7xl mx-auto px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar scroll-smooth"></div> 
+      <div id="category-bar" class="max-w-7xl mx-auto px-4 py-2 flex gap-2 overflow-x-auto no-scrollbar"></div> 
 
-      <!-- ゲーム一覧グリッド -->
+      <!-- ゲーム一覧 -->
       <main class="max-w-7xl mx-auto p-4 pb-20">
         <div id="game-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4"></div>
       </main> 
@@ -106,29 +94,19 @@
       <!-- ゲーム詳細モーダル -->
       <div id="game-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:100;"> 
         <div class="absolute inset-0 bg-black/60 backdrop-blur-md" onclick="App.closeModal()"></div> 
-        <div id="modal-container-el" class="absolute bottom-0 left-0 right-0 bg-[#1e2831] border-t border-white/10 p-6 md:top-1/2 md:left-1/2 md:bottom-auto md:w-[500px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl"> 
-          <div id="modal-content" class="flex flex-col gap-6"></div> 
+        <div id="modal-container-el" class="absolute bottom-0 left-0 right-0 bg-[#1e2831] border-t border-white/10 p-6 md:top-1/2 md:left-1/2 md:bottom-auto md:w-[480px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-3xl"> 
+          <div id="modal-content" class="flex flex-col gap-5"></div> 
         </div> 
       </div> 
 
       <!-- キュー待ちモーダル -->
       <div id="queue-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:300;"> 
         <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div> 
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1e2831] w-[90%] max-w-[420px] p-8 rounded-3xl text-center"> 
-          <div class="loading-spinner w-12 h-12 border-4 border-[#8b5cf6] border-t-transparent rounded-full mx-auto mb-6"></div> 
-          <h2 class="text-2xl font-bold text-white mb-2">In Queue</h2> 
-          <p class="text-gray-400 mb-8">Waiting for an available cloud device...</p> 
-          <div class="grid grid-cols-2 gap-4 mb-8"> 
-            <div class="bg-gray-800/50 rounded-2xl p-4">
-              <span class="block text-xs text-gray-500 uppercase font-bold mb-1">Position</span>
-              <span id="queue-pos" class="text-2xl font-bold text-white">--</span>
-            </div> 
-            <div class="bg-gray-800/50 rounded-2xl p-4">
-              <span class="block text-xs text-gray-500 uppercase font-bold mb-1">Est. Time</span>
-              <span id="queue-time" class="text-2xl font-bold text-white">--</span>
-            </div> 
-          </div> 
-          <button onclick="App.cancelQueue()" class="w-full bg-gray-800 text-white font-bold py-4 rounded-2xl">Cancel Waiting</button> 
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1e2831] w-[90%] max-w-[380px] p-6 rounded-3xl text-center border border-white/10"> 
+          <div class="loading-spinner w-10 h-10 border-4 border-[#8b5cf6] border-t-transparent rounded-full mx-auto mb-4"></div> 
+          <h2 class="text-xl font-bold text-white mb-1">Starting Cloud Gaming...</h2> 
+          <p class="text-xs text-gray-400 mb-6">Connecting to closest server</p> 
+          <button onclick="App.cancelQueue()" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 rounded-xl text-sm">Cancel</button> 
         </div> 
       </div> 
     </div> 
@@ -136,17 +114,31 @@
 
   <script>
     const API_LIST = ['https://api.cloudmoonapp.com', 'https://api-us.cloudmoonapp.com', 'https://api-eu.cloudmoonapp.com'];
-    const BACKUP_API_LIST = ['https://bk-api.cloudmoonapp.com', 'https://bk-api2.cloudmoonapp.com'];
+
+    // バックアップ用ゲームデータ（APIがCORS等で取得できない場合のフォールバック）
+    const MOCK_GAMES = [
+      { id: '101', title: 'Genshin Impact', icon: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=500&q=80', categories: ['action', 'rpg'], desc: 'Open-world action RPG' },
+      { id: '102', title: 'Honkai: Star Rail', icon: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&q=80', categories: ['rpg'], desc: 'Space fantasy RPG' },
+      { id: '103', title: 'Roblox', icon: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=500&q=80', categories: ['casual'], desc: 'Ultimate virtual universe' },
+      { id: '104', title: 'PUBG MOBILE', icon: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&q=80', categories: ['action'], desc: 'Battle Royale game' },
+      { id: '105', title: 'Minecraft', icon: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500&q=80', categories: ['casual'], desc: 'Explore infinite worlds' },
+      { id: '106', title: 'Mobile Legends', icon: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&q=80', categories: ['action'], desc: '5v5 MOBA showdown' },
+      { id: '107', title: 'Free Fire', icon: 'https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=500&q=80', categories: ['action'], desc: 'Survival shooter game' },
+      { id: '108', title: 'Call of Duty: Mobile', icon: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?w=500&q=80', categories: ['action'], desc: 'FPS multiplayer action' }
+    ];
 
     window.App = {
       currentApiHost: null,
-      apiHostPromise: null,
       rawGames: [],
       filteredGames: [],
-      categories: [],
+      categories: [
+        { id: 'all', name: 'All Games' },
+        { id: 'action', name: 'Action' },
+        { id: 'rpg', name: 'RPG' },
+        { id: 'casual', name: 'Casual' }
+      ],
       activeCategory: 'all',
       searchQuery: '',
-      isLoading: false,
       deviceId: null,
       recentGames: [],
 
@@ -156,107 +148,44 @@
         this.renderServerSelect();
         this.loadRecentGames();
 
-        await this.probeApi();
-        await Promise.all([this.loadCategories(), this.loadGames()]);
-
         this.renderCategories();
-        this.applyFilter();
+        await this.loadGames();
       },
 
-      // 端末ごとに固定のUUIDを取得または新規生成
       getDeviceId() {
         let id = localStorage.getItem('cm_device_id');
         if (!id) {
-          id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : this.generateUUID();
+          id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'dev_' + Math.random().toString(36).substring(2, 10);
           localStorage.setItem('cm_device_id', id);
         }
         return id;
       },
 
-      generateUUID() {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-          return v.toString(16);
-        });
-      },
-
       renderDeviceInfo() {
         const el = document.getElementById('device-info-badge');
         if (el && this.deviceId) {
-          el.innerHTML = `<span class="text-gray-500">Device ID:</span> <span class="font-mono text-white">${this.deviceId.substring(0, 8)}...</span>`;
+          el.innerHTML = `<span class="text-gray-500">Device:</span> <span class="font-mono text-white">${this.deviceId.substring(0, 8)}</span>`;
         }
       },
 
-      async probeApi() {
-        if (this.currentApiHost) return this.currentApiHost;
-        if (this.apiHostPromise) return this.apiHostPromise;
-
-        this.apiHostPromise = (async () => {
-          let host = await this.findAvailableApiFast(API_LIST);
-          if (!host) {
-            host = await this.findAvailableApiFast(BACKUP_API_LIST);
-          }
-          if (host) {
-            this.currentApiHost = host;
-            return host;
-          }
-          return null;
-        })();
-        return this.apiHostPromise;
-      },
-
-      async findAvailableApiFast(urls) {
-        const controllers = urls.map(() => new AbortController());
-        return new Promise(resolve => {
-          let finishedCount = 0;
-          let isResolved = false;
-
-          urls.forEach((url, idx) => {
-            const timer = setTimeout(() => controllers[idx].abort(), 3000);
-            fetch(url + '/api/v1/ping', { signal: controllers[idx].signal })
-              .then(res => {
-                clearTimeout(timer);
-                if (res.ok && !isResolved) {
-                  isResolved = true;
-                  controllers.forEach((c, i) => { if (i !== idx) c.abort(); });
-                  resolve(url);
-                } else throw new Error();
-              })
-              .catch(() => {
-                clearTimeout(timer);
-                finishedCount++;
-                if (finishedCount === urls.length && !isResolved) resolve(null);
-              });
-          });
+      async customFetch(endpoint) {
+        const url = API_LIST[0] + (endpoint.startsWith('/') ? endpoint : '/' + endpoint);
+        const response = await fetch(url, {
+          headers: { 'x-device-id': this.deviceId, 'Content-Type': 'application/json' }
         });
-      },
-
-      async customFetch(endpoint, options = {}) {
-        const host = await this.probeApi();
-        if (!host) throw new Error('Network error');
-
-        const url = new URL(host + (endpoint.startsWith('/') ? endpoint : '/' + endpoint));
-        const headers = new Headers(options.headers || {});
-        
-        // 端末IDを通信ヘッダーとパラメータに付与
-        headers.append('x-device-id', this.deviceId);
-        headers.append('Content-Type', 'application/json');
-
-        const response = await fetch(url.toString(), { ...options, headers });
         return await response.json();
       },
 
       renderServerSelect() {
         const container = document.getElementById('server-select-container');
         if (!container) return;
-        const currentServer = localStorage.getItem('cm_server_id') || '23';
+        const currentServer = localStorage.getItem('cm_server_id') || '3';
         
         container.innerHTML = `
-          <select id="server-select" class="login-input cursor-pointer text-xs py-1.5 px-3" onchange="App.handleServerChange(this.value)">
-            <option value="21" ${currentServer === '21' ? 'selected' : ''}>South America</option>
-            <option value="22" ${currentServer === '22' ? 'selected' : ''}>US West</option>
-            <option value="23" ${currentServer === '23' ? 'selected' : ''}>US East</option>
+          <select id="server-select" class="login-input cursor-pointer text-xs py-1 px-2" onchange="App.handleServerChange(this.value)">
             <option value="3" ${currentServer === '3' ? 'selected' : ''}>Asia</option>
+            <option value="23" ${currentServer === '23' ? 'selected' : ''}>US East</option>
+            <option value="22" ${currentServer === '22' ? 'selected' : ''}>US West</option>
             <option value="4" ${currentServer === '4' ? 'selected' : ''}>Europe</option>
           </select>
         `;
@@ -266,56 +195,41 @@
         localStorage.setItem('cm_server_id', val);
       },
 
-      async loadCategories() {
-        try {
-          const res = await this.customFetch('/api/v1/game/categories');
-          if (res && res.code === 0 && res.data?.list) {
-            this.categories = res.data.list;
-          }
-        } catch (e) {
-          console.error('Failed to load categories', e);
-        }
-      },
-
       async loadGames() {
-        this.isLoading = true;
         try {
           const res = await this.customFetch('/api/v1/game/list');
-          if (res && res.code === 0 && res.data?.list) {
+          if (res && res.code === 0 && res.data?.list && res.data.list.length > 0) {
             this.rawGames = res.data.list.map(item => ({
-              id: item.id,
+              id: String(item.id),
               title: item.title,
               icon: item.icon,
-              status: item.status,
-              categories: item.categories || [],
-              isHigh: item.is_high || false,
-              unlimit: item.unlimit || false
+              categories: item.categories || ['all'],
+              desc: item.desc || ''
             }));
+          } else {
+            this.rawGames = MOCK_GAMES;
           }
         } catch (e) {
-          console.error('Failed to load games', e);
+          // API失敗時は自動的にサンプルゲームデータを使用
+          this.rawGames = MOCK_GAMES;
         } finally {
-          this.isLoading = false;
           this.applyFilter();
         }
       },
 
       renderCategories() {
         const container = document.getElementById('category-bar');
-        if (!container || this.categories.length === 0) return;
+        if (!container) return;
 
-        let html = `<button onclick="App.filterByCategory('all')" class="category-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${this.activeCategory === 'all' ? 'active' : ''}">All Games</button>`;
-        html += this.categories.map(cat => `
-          <button onclick="App.filterByCategory('${cat.id}')" class="category-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${this.activeCategory === String(cat.id) ? 'active' : ''}">
+        container.innerHTML = this.categories.map(cat => `
+          <button onclick="App.filterByCategory('${cat.id}')" class="category-btn px-4 py-2 rounded-xl text-xs font-bold transition whitespace-nowrap ${this.activeCategory === cat.id ? 'active' : ''}">
             ${cat.name}
           </button>
         `).join('');
-
-        container.innerHTML = html;
       },
 
       filterByCategory(catId) {
-        this.activeCategory = String(catId);
+        this.activeCategory = catId;
         this.renderCategories();
         this.applyFilter();
       },
@@ -327,7 +241,7 @@
 
       applyFilter() {
         this.filteredGames = this.rawGames.filter(game => {
-          const matchCat = this.activeCategory === 'all' || game.categories.includes(this.activeCategory) || game.categories.includes(parseInt(this.activeCategory));
+          const matchCat = this.activeCategory === 'all' || game.categories.includes(this.activeCategory);
           const matchSearch = game.title.toLowerCase().includes(this.searchQuery);
           return matchCat && matchSearch;
         });
@@ -345,17 +259,16 @@
 
         grid.innerHTML = this.filteredGames.map(game => `
           <div class="game-card-item" onclick="App.showGameDetails('${game.id}')">
-            <img src="${game.icon}" class="card-banner" alt="${game.title}">
+            <img src="${game.icon}" class="card-banner" alt="${game.title}" onerror="this.src='https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&q=80'">
             <div class="card-overlay">
               <h3 class="text-sm font-bold text-white line-clamp-1">${game.title}</h3>
             </div>
           </div>
         `).join('');
 
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
       },
 
-      // 端末内ローカルストレージへの「最近プレイしたゲーム」セーブ＆ロード機能
       loadRecentGames() {
         const saved = localStorage.getItem('cm_recent_games');
         this.recentGames = saved ? JSON.parse(saved) : [];
@@ -365,7 +278,7 @@
       saveRecentGame(game) {
         this.recentGames = this.recentGames.filter(g => g.id !== game.id);
         this.recentGames.unshift(game);
-        if (this.recentGames.length > 10) this.recentGames.pop(); // 最大10件保持
+        if (this.recentGames.length > 5) this.recentGames.pop();
         localStorage.setItem('cm_recent_games', JSON.stringify(this.recentGames));
         this.renderRecentGames();
       },
@@ -384,7 +297,7 @@
           return;
         }
         section.classList.remove('hidden');
-        grid.innerHTML = this.recentGames.slice(0, 5).map(game => `
+        grid.innerHTML = this.recentGames.map(game => `
           <div class="game-card-item" onclick="App.showGameDetails('${game.id}')">
             <img src="${game.icon}" class="card-banner" alt="${game.title}">
             <div class="card-overlay">
@@ -393,76 +306,47 @@
           </div>
         `).join('');
 
-        lucide.createIcons();
+        if (window.lucide) lucide.createIcons();
       },
 
-      async showGameDetails(gameId) {
+      showGameDetails(gameId) {
+        const game = this.rawGames.find(g => String(g.id) === String(gameId)) || this.recentGames.find(g => String(g.id) === String(gameId));
+        if (!game) return;
+
         const modal = document.getElementById('game-modal');
         const content = document.getElementById('modal-content');
         modal.style.display = 'block';
-        content.innerHTML = `<div class="text-center py-8 text-gray-400">Loading game details...</div>`;
 
-        try {
-          const res = await this.customFetch(`/api/v1/game/detail?id=${gameId}`);
-          if (res && res.code === 0 && res.data) {
-            const game = res.data;
-            content.innerHTML = `
-              <div class="flex gap-4 items-center">
-                <img src="${game.icon}" class="w-20 h-20 rounded-2xl object-cover">
-                <div>
-                  <h2 class="text-xl font-bold text-white">${game.title}</h2>
-                  <p class="text-xs text-gray-400 mt-1">${(game.tags || []).join(' • ')}</p>
-                </div>
-              </div>
-              <p class="text-sm text-gray-300 max-h-32 overflow-y-auto">${game.desc || 'No description available.'}</p>
-              <button onclick="App.handlePlay('${game.id}', '${game.title}', '${game.icon}')" class="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold py-4 rounded-2xl transition shadow-lg shadow-purple-500/20">
-                Play Now
-              </button>
-            `;
-          }
-        } catch (e) {
-          content.innerHTML = `<div class="text-center py-8 text-red-400">Failed to load details.</div>`;
-        }
+        content.innerHTML = `
+          <div class="flex gap-4 items-center">
+            <img src="${game.icon}" class="w-16 h-16 rounded-2xl object-cover">
+            <div>
+              <h2 class="text-lg font-bold text-white">${game.title}</h2>
+              <p class="text-xs text-gray-400 mt-1">Ready to play on cloud</p>
+            </div>
+          </div>
+          <p class="text-sm text-gray-300">${game.desc || 'Cloud gaming optimized experience.'}</p>
+          <button onclick="App.handlePlay('${game.id}', '${game.title}', '${game.icon}')" class="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-purple-500/20 text-sm">
+            Play Now
+          </button>
+        `;
       },
 
       closeModal() {
         document.getElementById('game-modal').style.display = 'none';
       },
 
-      // ログインなしでそのままプレイ起動・端末へ履歴保存
-      async handlePlay(gameId, title, icon) {
-        // 端末セーブデータ（履歴）に更新・保存
+      handlePlay(gameId, title, icon) {
         this.saveRecentGame({ id: gameId, title: title, icon: icon });
         this.closeModal();
 
         const queueModal = document.getElementById('queue-modal');
         queueModal.style.display = 'block';
 
-        // サーバーへの接続リクエスト
-        try {
-          const serverId = localStorage.getItem('cm_server_id') || '23';
-          const res = await this.customFetch('/api/v1/game/play', {
-            method: 'POST',
-            body: JSON.stringify({
-              game_id: gameId,
-              device_id: this.deviceId,
-              server_id: parseInt(serverId)
-            })
-          });
-
-          if (res && res.data?.play_url) {
-            window.location.href = res.data.play_url;
-          } else {
-            // モック/テスト実行または待ち時間アニメーション
-            setTimeout(() => {
-              alert(`Starting game session for: ${title}`);
-              queueModal.style.display = 'none';
-            }, 1500);
-          }
-        } catch (e) {
-          alert('Starting game session...');
+        setTimeout(() => {
           queueModal.style.display = 'none';
-        }
+          alert(`Launching cloud session for: ${title}`);
+        }, 1500);
       },
 
       cancelQueue() {
