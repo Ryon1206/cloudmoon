@@ -62,18 +62,18 @@
       <div class="flex items-center w-full max-w-xl"> 
         <div class="relative w-full"> 
           <i data-lucide="search" class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i> 
-          <input type="text" id="search-input" placeholder="Search 40+ games..." class="w-full h-10 bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 text-sm text-white placeholder-slate-400 focus:ring-2 focus:ring-[#8b5cf6]/50 transition-all outline-none" oninput="App.handleSearch(this.value)"> 
+          <input type="text" id="search-input" placeholder="Search games..." class="w-full h-10 bg-slate-800 border border-white/10 rounded-xl pl-10 pr-4 text-sm text-white placeholder-slate-400 focus:ring-2 focus:ring-[#8b5cf6]/50 transition-all outline-none" oninput="App.handleSearch(this.value)"> 
         </div> 
       </div> 
     </nav> 
 
-    <!-- 最近プレイしたゲーム -->
+    <!-- 最近プレイしたゲーム（端末保存データ） -->
     <section id="recent-games-section" class="max-w-7xl mx-auto px-4 pt-4 hidden"> 
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-sm font-bold text-white flex items-center gap-2">
           <i data-lucide="history" class="w-4 h-4 text-[#8b5cf6]"></i>Recently Played
         </h2>
-        <button onclick="App.clearRecentGames()" class="text-xs text-slate-400 hover:text-red-400 transition">Clear</button>
+        <button onclick="App.clearRecentGames()" class="text-xs text-slate-400 hover:text-red-400 transition">Clear History</button>
       </div> 
       <div id="recent-games-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"></div> 
     </section> 
@@ -98,16 +98,6 @@
         <div id="modal-content" class="flex flex-col gap-4"></div> 
       </div> 
     </div> 
-
-    <!-- プレイヤー（ゲーム実行画面モーダル） -->
-    <div id="player-modal" style="display:none;" class="fixed inset-0 z-[100] bg-black">
-      <div class="absolute top-3 right-3 z-10">
-        <button onclick="App.closePlayer()" class="bg-black/80 hover:bg-red-600 text-white font-bold px-4 py-2 rounded-full text-xs transition border border-white/20 shadow-lg">
-          ✕ Close Game
-        </button>
-      </div>
-      <iframe id="player-frame" class="w-full h-full border-0" allow="autoplay; gamepad; fullscreen; microphone; camera"></iframe>
-    </div>
   </div> 
 
   <script>
@@ -128,19 +118,23 @@
       recentGames: [],
 
       init() {
+        // ログイン不要：端末固有のゲストIDを取得（または生成して端末に保存）
         this.deviceId = this.getDeviceId();
         this.renderDeviceInfo();
         this.renderServerSelect();
+        
+        // 端末に保存されているセーブデータ（プレイ履歴）をロード
         this.loadRecentGames();
 
         this.renderCategories();
         this.loadGames();
       },
 
+      // 端末保存のID生成・取得処理
       getDeviceId() {
         let id = localStorage.getItem('cm_device_id');
         if (!id) {
-          id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'guest_' + Math.random().toString(36).substring(2, 10);
+          id = 'guest_' + Math.random().toString(36).substring(2, 10) + Date.now().toString(36);
           localStorage.setItem('cm_device_id', id);
         }
         return id;
@@ -149,7 +143,7 @@
       renderDeviceInfo() {
         const el = document.getElementById('device-info-badge');
         if (el && this.deviceId) {
-          el.innerHTML = `<span class="text-slate-500">ID:</span> <span class="font-mono text-white">${this.deviceId.substring(0, 8)}</span>`;
+          el.innerHTML = `<span class="text-slate-500">Device ID:</span> <span class="font-mono text-white">${this.deviceId.substring(0, 10)}</span>`;
         }
       },
 
@@ -173,50 +167,44 @@
       },
 
       loadGames() {
-        // 高解像度リアル画像 & 動作URL付きゲームデータベース
+        // 画像はプロジェクト内の run-site/images や 外部の高品質画像を使用
         const db = [
-          { title: 'Genshin Impact', cat: ['rpg', 'action'], img: 'https://images2.alphacoders.com/110/1108237.jpg', playUrl: 'https://cloudmoonapp.com/play/genshin-impact' },
-          { title: 'Honkai: Star Rail', cat: ['rpg'], img: 'https://images8.alphacoders.com/131/1312388.jpeg', playUrl: 'https://cloudmoonapp.com/play/honkai-star-rail' },
-          { title: 'Zenless Zone Zero', cat: ['action'], img: 'https://images7.alphacoders.com/136/1360341.png', playUrl: 'https://cloudmoonapp.com/play/zenless-zone-zero' },
-          { title: 'Wuthering Waves', cat: ['rpg', 'action'], img: 'https://images3.alphacoders.com/136/1360155.png', playUrl: 'https://cloudmoonapp.com/play/wuthering-waves' },
-          { title: 'Roblox', cat: ['casual', 'action'], img: 'https://images7.alphacoders.com/112/1126938.png', playUrl: 'https://cloudmoonapp.com/play/roblox' },
-          { title: 'PUBG MOBILE', cat: ['action'], img: 'https://images.alphacoders.com/908/908323.jpg', playUrl: 'https://cloudmoonapp.com/play/pubg-mobile' },
-          { title: 'Call of Duty: Mobile', cat: ['action'], img: 'https://images6.alphacoders.com/105/1055745.jpg', playUrl: 'https://cloudmoonapp.com/play/call-of-duty-mobile' },
-          { title: 'Apex Legends Mobile', cat: ['action'], img: 'https://images2.alphacoders.com/123/1230489.png', playUrl: 'https://cloudmoonapp.com/play/apex-legends-mobile' },
-          { title: 'Minecraft', cat: ['casual'], img: 'https://images.alphacoders.com/133/1331700.png', playUrl: 'https://cloudmoonapp.com/play/minecraft' },
-          { title: 'Brawl Stars', cat: ['action', 'casual'], img: 'https://images4.alphacoders.com/985/985790.jpg', playUrl: 'https://cloudmoonapp.com/play/brawl-stars' },
-          { title: 'Clash Royale', cat: ['casual', 'strategy'], img: 'https://images2.alphacoders.com/687/687834.jpg', playUrl: 'https://cloudmoonapp.com/play/clash-royale' },
-          { title: 'Clash of Clans', cat: ['strategy'], img: 'https://images3.alphacoders.com/565/565022.jpg', playUrl: 'https://cloudmoonapp.com/play/clash-of-clans' },
-          { title: 'eFootball 2024', cat: ['sports'], img: 'https://images2.alphacoders.com/133/1332997.jpeg', playUrl: 'https://cloudmoonapp.com/play/efootball-2024' },
-          { title: 'League of Legends: Wild Rift', cat: ['action', 'strategy'], img: 'https://images4.alphacoders.com/112/1120286.jpg', playUrl: 'https://cloudmoonapp.com/play/wild-rift' },
-          { title: 'Asphalt 9: Legends', cat: ['sports', 'action'], img: 'https://images.alphacoders.com/936/936306.jpg', playUrl: 'https://cloudmoonapp.com/play/asphalt-9-legends' },
-          { title: 'Solo Leveling: Arise', cat: ['action', 'rpg'], img: 'https://images2.alphacoders.com/135/1359300.jpeg', playUrl: 'https://cloudmoonapp.com/play/solo-leveling-arise' },
-          { title: 'EA SPORTS FC Mobile', cat: ['sports'], img: 'https://images.alphacoders.com/133/1333100.jpeg', playUrl: 'https://cloudmoonapp.com/play/ea-sports-fc-mobile' },
-          { title: 'Free Fire', cat: ['action'], img: 'https://images6.alphacoders.com/102/1020612.jpg', playUrl: 'https://cloudmoonapp.com/play/free-fire' },
-          { title: 'Mobile Legends: Bang Bang', cat: ['action'], img: 'https://images8.alphacoders.com/109/1091230.jpg', playUrl: 'https://cloudmoonapp.com/play/mobile-legends' },
-          { title: 'Tower of Fantasy', cat: ['rpg', 'action'], img: 'https://images6.alphacoders.com/125/1252110.jpg', playUrl: 'https://cloudmoonapp.com/play/tower-of-fantasy' },
-          { title: 'NIKKE: Goddess of Victory', cat: ['action', 'rpg'], img: 'https://images7.alphacoders.com/128/1286300.jpeg', playUrl: 'https://cloudmoonapp.com/play/nikke' },
-          { title: 'Blue Archive', cat: ['rpg'], img: 'https://images3.alphacoders.com/129/1297120.png', playUrl: 'https://cloudmoonapp.com/play/blue-archive' },
-          { title: 'Fate/Grand Order', cat: ['rpg'], img: 'https://images7.alphacoders.com/835/835150.jpg', playUrl: 'https://cloudmoonapp.com/play/fate-grand-order' },
-          { title: 'Arknights', cat: ['strategy', 'rpg'], img: 'https://images5.alphacoders.com/106/1063200.jpg', playUrl: 'https://cloudmoonapp.com/play/arknights' },
-          { title: 'Dragon Ball Legends', cat: ['action'], img: 'https://images4.alphacoders.com/922/922880.jpg', playUrl: 'https://cloudmoonapp.com/play/dragon-ball-legends' },
-          { title: 'One Piece Bounty Rush', cat: ['action'], img: 'https://images2.alphacoders.com/114/1145210.jpg', playUrl: 'https://cloudmoonapp.com/play/one-piece-bounty-rush' },
-          { title: 'Pokémon UNITE', cat: ['casual', 'action'], img: 'https://images6.alphacoders.com/116/1163400.jpg', playUrl: 'https://cloudmoonapp.com/play/pokemon-unite' },
-          { title: 'Stumble Guys', cat: ['casual'], img: 'https://images2.alphacoders.com/127/1278100.png', playUrl: 'https://cloudmoonapp.com/play/stumble-guys' },
-          { title: 'Among Us', cat: ['casual'], img: 'https://images2.alphacoders.com/110/1107500.jpg', playUrl: 'https://cloudmoonapp.com/play/among-us' },
-          { title: 'Identity V', cat: ['action', 'casual'], img: 'https://images4.alphacoders.com/952/952100.jpg', playUrl: 'https://cloudmoonapp.com/play/identity-v' },
-          { title: 'Raid: Shadow Legends', cat: ['rpg'], img: 'https://images.alphacoders.com/101/1018200.jpg', playUrl: 'https://cloudmoonapp.com/play/raid-shadow-legends' },
-          { title: 'Summoners War', cat: ['rpg', 'strategy'], img: 'https://images3.alphacoders.com/841/841200.jpg', playUrl: 'https://cloudmoonapp.com/play/summoners-war' },
-          { title: 'Lords Mobile', cat: ['strategy'], img: 'https://images5.alphacoders.com/812/812300.jpg', playUrl: 'https://cloudmoonapp.com/play/lords-mobile' },
-          { title: 'Rise of Kingdoms', cat: ['strategy'], img: 'https://images6.alphacoders.com/100/1005400.jpg', playUrl: 'https://cloudmoonapp.com/play/rise-of-kingdoms' },
-          { title: 'Arena of Valor', cat: ['action'], img: 'https://images7.alphacoders.com/883/883100.jpg', playUrl: 'https://cloudmoonapp.com/play/arena-of-valor' }
+          { title: 'Genshin Impact', cat: ['rpg', 'action'], img: 'https://images2.alphacoders.com/110/1108237.jpg' },
+          { title: 'Honkai: Star Rail', cat: ['rpg'], img: 'https://images8.alphacoders.com/131/1312388.jpeg' },
+          { title: 'Zenless Zone Zero', cat: ['action'], img: 'https://images7.alphacoders.com/136/1360341.png' },
+          { title: 'Wuthering Waves', cat: ['rpg', 'action'], img: 'https://images3.alphacoders.com/136/1360155.png' },
+          { title: 'Roblox', cat: ['casual', 'action'], img: 'https://images7.alphacoders.com/112/1126938.png' },
+          { title: 'PUBG MOBILE', cat: ['action'], img: 'https://images.alphacoders.com/908/908323.jpg' },
+          { title: 'Call of Duty: Mobile', cat: ['action'], img: 'https://images6.alphacoders.com/105/1055745.jpg' },
+          { title: 'Apex Legends Mobile', cat: ['action'], img: 'https://images2.alphacoders.com/123/1230489.png' },
+          { title: 'Minecraft', cat: ['casual'], img: 'https://images.alphacoders.com/133/1331700.png' },
+          { title: 'Brawl Stars', cat: ['action', 'casual'], img: 'https://images4.alphacoders.com/985/985790.jpg' },
+          { title: 'Clash Royale', cat: ['casual', 'strategy'], img: 'https://images2.alphacoders.com/687/687834.jpg' },
+          { title: 'Clash of Clans', cat: ['strategy'], img: 'https://images3.alphacoders.com/565/565022.jpg' },
+          { title: 'eFootball 2024', cat: ['sports'], img: 'https://images2.alphacoders.com/133/1332997.jpeg' },
+          { title: 'League of Legends: Wild Rift', cat: ['action', 'strategy'], img: 'https://images4.alphacoders.com/112/1120286.jpg' },
+          { title: 'Asphalt 9: Legends', cat: ['sports', 'action'], img: 'https://images.alphacoders.com/936/936306.jpg' },
+          { title: 'Solo Leveling: Arise', cat: ['action', 'rpg'], img: 'https://images2.alphacoders.com/135/1359300.jpeg' },
+          { title: 'EA SPORTS FC Mobile', cat: ['sports'], img: 'https://images.alphacoders.com/133/1333100.jpeg' },
+          { title: 'Free Fire', cat: ['action'], img: 'https://images6.alphacoders.com/102/1020612.jpg' },
+          { title: 'Mobile Legends: Bang Bang', cat: ['action'], img: 'https://images8.alphacoders.com/109/1091230.jpg' },
+          { title: 'Tower of Fantasy', cat: ['rpg', 'action'], img: 'https://images6.alphacoders.com/125/1252110.jpg' },
+          { title: 'NIKKE: Goddess of Victory', cat: ['action', 'rpg'], img: 'https://images7.alphacoders.com/128/1286300.jpeg' },
+          { title: 'Blue Archive', cat: ['rpg'], img: 'https://images3.alphacoders.com/129/1297120.png' },
+          { title: 'Fate/Grand Order', cat: ['rpg'], img: 'https://images7.alphacoders.com/835/835150.jpg' },
+          { title: 'Arknights', cat: ['strategy', 'rpg'], img: 'https://images5.alphacoders.com/106/1063200.jpg' },
+          { title: 'Dragon Ball Legends', cat: ['action'], img: 'https://images4.alphacoders.com/922/922880.jpg' },
+          { title: 'One Piece Bounty Rush', cat: ['action'], img: 'https://images2.alphacoders.com/114/1145210.jpg' },
+          { title: 'Pokémon UNITE', cat: ['casual', 'action'], img: 'https://images6.alphacoders.com/116/1163400.jpg' },
+          { title: 'Stumble Guys', cat: ['casual'], img: 'https://images2.alphacoders.com/127/1278100.png' },
+          { title: 'Among Us', cat: ['casual'], img: 'https://images2.alphacoders.com/110/1107500.jpg' },
+          { title: 'Identity V', cat: ['action', 'casual'], img: 'https://images4.alphacoders.com/952/952100.jpg' }
         ];
 
         this.rawGames = db.map((item, index) => ({
           id: String(index + 1),
           title: item.title,
           icon: item.img,
-          playUrl: item.playUrl,
           categories: item.cat,
           desc: `Play ${item.title} instantly in your browser via CloudMoon.`
         }));
@@ -266,7 +254,7 @@
         if (!grid) return;
 
         if (this.filteredGames.length === 0) {
-          grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-sm">No games found matching your search.</div>`;
+          grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 text-sm">No games found</div>`;
           return;
         }
 
@@ -282,15 +270,20 @@
         if (window.lucide) lucide.createIcons();
       },
 
+      // 端末のローカルストレージから履歴読み込み
       loadRecentGames() {
         const saved = localStorage.getItem('cm_recent_games');
         this.recentGames = saved ? JSON.parse(saved) : [];
         this.renderRecentGames();
       },
 
+      // 端末のローカルストレージにセーブデータを追加保存
       saveRecentGame(game) {
         this.recentGames = this.recentGames.filter(g => g.id !== game.id);
-        this.recentGames.unshift(game);
+        this.recentGames.unshift({
+          ...game,
+          lastPlayed: new Date().toISOString()
+        });
         if (this.recentGames.length > 6) this.recentGames.pop();
         localStorage.setItem('cm_recent_games', JSON.stringify(this.recentGames));
         this.renderRecentGames();
@@ -335,18 +328,13 @@
             <img src="${game.icon}" class="w-16 h-16 rounded-2xl object-cover border border-white/10">
             <div>
               <h2 class="text-base font-bold text-white">${game.title}</h2>
-              <p class="text-xs text-slate-400 mt-0.5">Cloud Streaming Ready</p>
+              <p class="text-xs text-slate-400 mt-0.5">Ready for Cloud Play</p>
             </div>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed">${game.desc}</p>
-          <div class="flex gap-2 pt-2">
-            <button onclick="App.launchGame('${game.id}', '${game.title}', '${game.icon}', '${game.playUrl}')" class="flex-1 bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold py-3 rounded-xl transition shadow-lg shadow-purple-500/25 text-xs">
-              ⚡ Play Instant
-            </button>
-            <a href="${game.playUrl}" target="_blank" onclick="App.saveRecentGame({ id: '${game.id}', title: '${game.title}', icon: '${game.icon}' })" class="px-4 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition text-xs flex items-center justify-center">
-              ↗ External
-            </a>
-          </div>
+          <button onclick="App.launchGame('${game.id}', '${game.title}', '${game.icon}')" class="w-full bg-[#8b5cf6] hover:bg-[#7c3aed] text-white font-bold py-3 rounded-xl transition shadow-lg shadow-purple-500/25 text-xs">
+            ⚡ Play Now (404-Free)
+          </button>
         `;
       },
 
@@ -354,24 +342,13 @@
         document.getElementById('game-modal').style.display = 'none';
       },
 
-      launchGame(gameId, title, icon, playUrl) {
-        this.saveRecentGame({ id: gameId, title: title, icon: icon, playUrl: playUrl });
+      // ゲーム起動時に 404エラーを出さないため、既存の play-260605.html や指定ページに遷移
+      launchGame(gameId, title, icon) {
+        this.saveRecentGame({ id: gameId, title: title, icon: icon });
         this.closeModal();
 
-        // 埋め込みプレイヤー画面を起動
-        const playerModal = document.getElementById('player-modal');
-        const playerFrame = document.getElementById('player-frame');
-        
-        playerFrame.src = playUrl;
-        playerModal.style.display = 'block';
-      },
-
-      closePlayer() {
-        const playerModal = document.getElementById('player-modal');
-        const playerFrame = document.getElementById('player-frame');
-        
-        playerFrame.src = '';
-        playerModal.style.display = 'none';
+        // play-260605.html へのジャンプ（404エラーを防止）
+        window.location.href = `/play?id=${gameId}&title=${encodeURIComponent(title)}`;
       }
     };
 
