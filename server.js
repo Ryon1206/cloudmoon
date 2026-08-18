@@ -8,10 +8,23 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 静的ファイルの提供
+// Serve static assets
 app.use(express.static(__dirname));
 
-// すべてのアクセスを最新の index.html に統一
+// Fallback to index.html for root or html routes
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+app.get(['/play', '/play.html', '/play-*'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'play-260605.html'));
+});
+
+app.get(['/portal', '/portal.html', '/portal-*'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'portal-260605.html'));
+});
+
+// Any unmatched GET request falls back to index.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
